@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple GLM OCR Server</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+        }
+        h1 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        #result-container {
+            margin-top: 30px;
+            display: none;
+        }
+        #result {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: "Courier New", Courier, monospace;
+            position: relative;
+            min-height: 50px;
+        }
+        .copy-button {
+            margin-top: 10px;
+            background-color: #2ecc71;
+        }
+        .copy-button:hover {
+            background-color: #27ae60;
+        }
+        .loading {
+            display: none;
+            color: #3498db;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .drag-over {
+            background-color: #e3f2fd !important;
+            border: 2px dashed #2196f3 !important;
+        }
+    </style>
+</head>
+<body id="dropZone">
+    <div class="container">
+        <h1>Simple GLM OCR</h1>
+        <form id="ocrForm">
+            <div class="form-group">
+                <label for="image">Select Image:</label>
+                <input type="file" id="image" name="image" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="prompt">Choose Prompt:</label>
+                <select id="prompt" name="prompt">
+                    <option value="Text Recognition:">Text Recognition:</option>
+                    <option value="Table Recognition:">Table Recognition:</option>
+                    <option value="Formula Recognition:">Formula Recognition:</option>
+                </select>
+            </div>
+            <button type="submit" id="submitBtn">Submit</button>
+            <div id="loading" class="loading">Processing image... this may take a moment.</div>
+        </form>
+
+        <div id="result-container">
+            <h2>Recognized Text:</h2>
+            <div id="result"></div>
+            <button class="copy-button" onclick="copyResult()">Copy to Clipboard</button>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('ocrForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loading = document.getElementById('loading');
+        const resultContainer = document.getElementById('result-container');
+        const resultDiv = document.getElementById('result');
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('image');
+
+        // Drag and Drop implementation
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.add('drag-over');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => {
+                dropZone.classList.remove('drag-over');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files && files.length > 0) {
+                fileInput.files = files;
+                // Trigger change event if needed
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        }, false);
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            
+            submitBtn.disabled = true;
+            loading.style.display = 'block';
+            resultContainer.style.display = 'none';
+
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}: ${await response.text()}`);
+                }
+
+                const text = await response.text();
+                resultDiv.textContent = text;
+                resultContainer.style.display = 'block';
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        };
+
+        function copyResult() {
+            const text = resultDiv.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-button');
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
