@@ -118,3 +118,8 @@ GLM-OCR supports [multiple prompt formats](https://huggingface.co/zai-org/GLM-OC
 * `Table Recognition:` (for tables as HTML)
 * `Formula Recognition:` (for equations in LaTeX)
 * Schema-based JSON extraction
+
+# FAQ
+
+* *How to run without GPU?*
+  * Load the model in CPU-mode: `model = SimpleGlmOcr(device="cpu")`
