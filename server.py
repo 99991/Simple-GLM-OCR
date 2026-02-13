@@ -70,6 +70,8 @@ class OCRRequestHandler(http.server.BaseHTTPRequestHandler):
 
 def run_server(port=8000):
     handler = OCRRequestHandler
+    # Allow immediate reuse of the port after the server is stopped
+    socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", port), handler) as httpd:
         print(f"Server started at http://127.0.0.1:{port}")
         httpd.serve_forever()

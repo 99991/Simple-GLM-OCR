@@ -1,8 +1,21 @@
 import requests
 
-prompt = "Text Recognition:"
 url = "http://127.0.0.1:8000/api/ocr"
-filename = "testimage.jpg"
+
+# We thank Obama for providing his photo for testing purposes
+filename = "obama.jpg"
+
+prompt = """
+{
+    "last_name": "",
+    "first_name": "",
+    "tie color": "",
+    "facial expression": "",
+    "age": "",
+    "body posture": "",
+    "background": "",
+}
+"""
 
 with open(filename, "rb") as f:
     image_bytes = f.read()
