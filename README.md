@@ -124,6 +124,7 @@ curl -X POST \
 This makes it very easy to build a screen text recognition tool using the `scrot` program.
 
 ```bash
+#!/usr/bin/env bash
 scrot -s -o /tmp/capture.png
 curl -X POST \
     -F 'prompt=Text Recognition:' \
@@ -131,6 +132,8 @@ curl -X POST \
     http://127.0.0.1:8000/api/ocr > /tmp/text.txt
 xdg-open /tmp/text.txt
 ```
+
+Put the code in a file, mark it as executable and bind it to a shortcut for convenient access!
 
 # Prompt Formats
 
