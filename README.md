@@ -124,7 +124,7 @@ curl -X POST \
 This makes it very easy to build a screen text recognition tool using the `scrot` program.
 
 ```bash
-scrot -so /tmp/capture.png
+scrot -s -o /tmp/capture.png
 curl -X POST \
     -F 'prompt=Text Recognition:' \
     -F 'image=@/tmp/capture.png' \
