@@ -92,17 +92,6 @@ response.raise_for_status()
 print(response.text)
 ```
 
-#### cURL
-
-You can also use cURL to send a text recognition request to the server:
-
-```bash
-curl -X POST \
-    -F 'prompt=Text Recognition:' \
-    -F 'image=@testimage.jpg' \
-    http://127.0.0.1:8000/api/ocr
-```
-
 #### Image
 
 <img width="500" alt="obama" src="https://raw.githubusercontent.com/99991/Simple-GLM-OCR/refs/heads/main/obama.jpg" />
@@ -120,6 +109,28 @@ curl -X POST \
         "background": "American flag and presidential seal"
     }
     ```
+
+#### cURL
+
+You can also use cURL to send a text recognition request to the server:
+
+```bash
+curl -X POST \
+    -F 'prompt=Text Recognition:' \
+    -F 'image=@testimage.jpg' \
+    http://127.0.0.1:8000/api/ocr
+```
+
+This makes it very easy to build a screen text recognition tool using the `scrot` program.
+
+```bash
+scrot -so /tmp/capture.png
+curl -X POST \
+    -F 'prompt=Text Recognition:' \
+    -F 'image=@/tmp/capture.png' \
+    http://127.0.0.1:8000/api/ocr > /tmp/text.txt
+xdg-open /tmp/text.txt
+```
 
 # Prompt Formats
 
