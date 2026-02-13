@@ -59,7 +59,7 @@ You can then visit the website at http://127.0.0.1:8000 to upload images for tex
 
 # API
 
-After you have started the server, you can use the API:
+After you have started the server, you can use the API (requires `pip install requests`):
 
 ```python
 import requests
@@ -92,6 +92,17 @@ response.raise_for_status()
 print(response.text)
 ```
 
+#### cURL
+
+You can also use cURL to send a text recognition request to the server:
+
+```bash
+curl -X POST \
+    -F 'prompt=Text Recognition:' \
+    -F 'image=@testimage.jpg' \
+    http://127.0.0.1:8000/api/ocr
+```
+
 #### Image
 
 <img width="500" alt="obama" src="https://raw.githubusercontent.com/99991/Simple-GLM-OCR/refs/heads/main/obama.jpg" />
@@ -110,7 +121,7 @@ print(response.text)
     }
     ```
 
-# Prompts
+# Prompt Formats
 
 GLM-OCR supports [multiple prompt formats](https://huggingface.co/zai-org/GLM-OCR#prompt-limited):
 
