@@ -34,7 +34,7 @@ over the lazy dog.
 * Next, install the following Python libraries with pip:
 
 ```
-pip install regex pillow safetensors
+pip install regex numpy pillow safetensors
 ```
 
 * Now you can clone the repository and run the example.
