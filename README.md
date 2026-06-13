@@ -1,6 +1,7 @@
 # Simple-GLM-OCR
 
 Simple optical character recognition based on [GLM-OCR](https://github.com/zai-org/GLM-OCR) with fewer dependencies.
+See also [Simple-PP-DocLayoutV3](https://github.com/99991/Simple-PP-DocLayoutV3) for document layout analysis.
 
 ## Example
 
